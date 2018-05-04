@@ -61,7 +61,7 @@ public class Main {
 		System.out.println("Top Artists:");
 		System.out.println(artistLines);
 
-		System.out.println("Top Tagss:");
+		System.out.println("Top Tags:");
 		System.out.println(tagLines);
 
 	}
