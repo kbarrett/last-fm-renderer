@@ -17,7 +17,10 @@ public class ArtistsTags {
 		cache = CacheBuilder.newBuilder().build(new CacheLoader<String, Collection<String>>(){
 			@Override
 			public Collection<String> load(String artist) throws Exception {
-				return Artist.getTopTags(artist, apiKey).stream().map(t -> t.getName()).collect(Collectors.toList());
+				return Artist.getTopTags(artist, apiKey).stream()
+						.map(t -> t.getName())
+						.filter(s -> !"seen live".equals(s))
+						.collect(Collectors.toList());
 			}
 		});
 	}

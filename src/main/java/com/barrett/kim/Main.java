@@ -28,26 +28,42 @@ public class Main {
 
 		UntilDate untilDate = new UntilDate(LocalDateTime.now());
 		untilDate.previousWeek();
-		Map<String, Integer> artists = Maps.newLinkedHashMap();
 
-		StringBuilder lines = new StringBuilder();
+		Map<String, Integer> artists = Maps.newLinkedHashMap();
+		Map<String, Integer> tags = Maps.newLinkedHashMap();
+
+		StringBuilder artistLines = new StringBuilder();
+		StringBuilder tagLines = new StringBuilder();
 
 		TrackAutoPager.forEachTrack(user, apiKey, new TrackConsumer() {
 			@Override
 			public boolean consume(Track track) {
 				if (untilDate.isAfter(track.getPlayedWhen())) {
-					lines.append(lineRenderer.render(artists));
-					lines.append('\n');
+					artistLines.append(lineRenderer.render(artists));
+					artistLines.append('\n');
 					artists.clear();
+
+					tagLines.append(lineRenderer.render(tags));
+					tagLines.append('\n');
+					tags.clear();
+
 					untilDate.previousWeek();
 				}
-				artists.compute(track.getArtist(), (key, existing) -> existing == null ? 1 : existing + 1);
+				String trackArtist = track.getArtist();
+				artists.compute(trackArtist, (key, existing) -> existing == null ? 1 : existing + 1);
+				for (String artistTag : artistsTags.getTags(trackArtist)) {
+					tags.compute(artistTag, (key, existing) -> (existing == null ? 0 : existing) + artists.get(trackArtist));
+				}
 				return untilDate.getWeekCount() <= 10;
 			}
 		});
 
+		System.out.println("Top Artists:");
+		System.out.println(artistLines);
 
-		System.out.println(lines);
+		System.out.println("Top Tagss:");
+		System.out.println(tagLines);
+
 	}
 
 }
